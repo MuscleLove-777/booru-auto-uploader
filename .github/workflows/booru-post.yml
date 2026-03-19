@@ -1,0 +1,49 @@
+name: Booru Auto Upload
+
+on:
+  schedule:
+    # 10:00 JST = 01:00 UTC
+    - cron: '0 1 * * *'
+    # 19:00 JST = 10:00 UTC
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests gdown pytrends
+
+      - name: Download uploaded log
+        continue-on-error: true
+        run: |
+          gh run download --name uploaded-booru-log --dir . 2>/dev/null || echo "No previous log found"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run upload
+        env:
+          AIBOORU_USERNAME: ${{ secrets.AIBOORU_USERNAME }}
+          AIBOORU_API_KEY: ${{ secrets.AIBOORU_API_KEY }}
+          GELBOORU_USERNAME: ${{ secrets.GELBOORU_USERNAME }}
+          GELBOORU_API_KEY: ${{ secrets.GELBOORU_API_KEY }}
+          GDRIVE_FOLDER_ID_BOORU: ${{ secrets.GDRIVE_FOLDER_ID_BOORU }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: python upload.py
+
+      - name: Save uploaded log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uploaded-booru-log
+          path: uploaded_booru.json
+          overwrite: true
