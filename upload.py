@@ -36,6 +36,7 @@ BASE_TAGS = [
     'muscular_female', 'female', 'ai_generated', '1girl', 'solo',
     'muscular', 'abs', 'fitness', 'armpit', 'toned',
     'athletic', 'biceps', 'strong', 'sports_bra',
+    'musclebeauty', 'thicc', 'thickfit', 'armpitfetish', 'tonedbody', 'fitchick', 'muscleworship',
 ]
 
 # フォルダ名・ファイル名からコンテンツを推測してタグを生成するマッピング
