@@ -2,10 +2,8 @@ name: Booru Auto Upload
 
 on:
   schedule:
-    # 10:00 JST = 01:00 UTC
-    - cron: '0 1 * * *'
-    # 19:00 JST = 10:00 UTC
-    - cron: '0 10 * * *'
+    # 毎日 JST 12:00 (UTC 3:00)
+    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
