@@ -303,16 +303,17 @@ def main():
     print("=== Booru Auto Uploader (AIBooru + Gelbooru) ===\n")
 
     if not GDRIVE_FOLDER_ID:
-        print("Error: GDRIVE_FOLDER_ID_BOORU not set")
-        return 1
+        print("Warning: GDRIVE_FOLDER_ID_BOORU not set, skipping upload")
+        return 0
 
     has_aibooru = AIBOORU_USERNAME and AIBOORU_API_KEY
     has_gelbooru = GELBOORU_USERNAME and GELBOORU_API_KEY
 
     if not has_aibooru and not has_gelbooru:
-        print("Error: No Booru credentials configured")
+        print("Warning: No Booru credentials configured")
         print("Set AIBOORU_USERNAME + AIBOORU_API_KEY and/or GELBOORU_USERNAME + GELBOORU_API_KEY")
-        return 1
+        print("Skipping upload (no credentials)")
+        return 0
 
     print(f"AIBooru: {'enabled' if has_aibooru else 'disabled'}")
     print(f"Gelbooru: {'enabled' if has_gelbooru else 'disabled'}")
