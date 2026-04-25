@@ -23,10 +23,31 @@ AIBOORU_API_KEY = os.environ.get("AIBOORU_API_KEY", "")
 GELBOORU_USERNAME = os.environ.get("GELBOORU_USERNAME", "")
 GELBOORU_API_KEY = os.environ.get("GELBOORU_API_KEY", "")
 
-PATREON_LINK = "https://www.patreon.com/cw/MuscleLove"
+PATREON_LINK = "https://www.patreon.com/cw/MuscleLove?utm_source=booru"
 IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp'}
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
 UPLOADED_LOG = "uploaded_booru.json"
+
+# --- MuscleLove ソースURLプール（Booruのsource欄でバックリンクをローテーション） ---
+ML_SOURCE_POOL = [
+    "https://musclelove-777.github.io/female-physique-queens/",
+    "https://musclelove-777.github.io/muscle-meal-girls/",
+    "https://musclelove-777.github.io/armwrestling-girls-navi/",
+    "https://musclelove-777.github.io/physique-girls-navi/",
+    "https://musclelove-777.github.io/fighting-girls-navi/",
+    "https://musclelove-777.github.io/joshi-prowrestling-navi/",
+    "https://musclelove-777.github.io/network/fitness/",
+    "https://musclelove-777.github.io/network/academy/",
+    PATREON_LINK,
+]
+
+
+def pick_source_url():
+    """Booru source欄に入れるMuscleLoveバックリンクをランダム選択"""
+    try:
+        return random.choice(ML_SOURCE_POOL)
+    except Exception:
+        return PATREON_LINK
 
 # ============================================================
 # Booru用タグ (underscore形式)
@@ -345,7 +366,7 @@ def main():
     tags = generate_tags(selected)
     rating = determine_rating(selected)
     tag_string = ' '.join(tags)
-    source = PATREON_LINK
+    source = pick_source_url()  # MuscleLoveバックリンクをローテーション
 
     print(f"\nTag string: {tag_string}")
     print(f"Rating: {rating}")
