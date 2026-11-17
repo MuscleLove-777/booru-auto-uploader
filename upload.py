@@ -4,6 +4,8 @@ Booru Auto Uploader (GitHub Actions用)
 AIBooru (aibooru.online) と Gelbooru (gelbooru.com) に同時投稿
 Google Driveからダウンロード → ランダム1ファイルをアップロード
 """
+from publication_evidence import record_publication_result, identity_from_url
+from promotion_policy import CANONICAL_URL, canonical_cta, strip_plain_promotion, normalize_plain_promotion, normalize_html_promotion
 import sys, json, os, random, time
 
 import requests
@@ -42,12 +44,15 @@ ML_SOURCE_POOL = [
 ]
 
 
+def _hold_unverified_source():
+    """Fixed HOLD until original artwork provenance is implemented and verified."""
+    print("HOLD: BOORU_SOURCE_PROVENANCE_UNVERIFIED")
+    raise SystemExit(24)
+
+
 def pick_source_url():
-    """Booru source欄に入れるMuscleLoveバックリンクをランダム選択"""
-    try:
-        return random.choice(ML_SOURCE_POOL)
-    except Exception:
-        return PATREON_LINK
+    """No unverified provenance URL may leave this function."""
+    _hold_unverified_source()
 
 # ============================================================
 # Booru用タグ (underscore形式)
@@ -321,6 +326,7 @@ def upload_to_gelbooru(file_path, tag_string, rating, source):
 # ============================================================
 
 def main():
+    _hold_unverified_source()
     print("=== Booru Auto Uploader (AIBooru + Gelbooru) ===\n")
 
     if not GDRIVE_FOLDER_ID:
@@ -390,8 +396,13 @@ def main():
     }
     if aibooru_result:
         entry['aibooru'] = aibooru_result
+        if aibooru_result.get('status') == 'success':
+            entry['aibooru_receipt'] = record_publication_result('aibooru', {'caption': tag_string},
+                                                               post_id=aibooru_result.get('id'), confirmed=True, provider_stage='upload')
     if gelbooru_result:
         entry['gelbooru'] = gelbooru_result
+        if gelbooru_result.get('status') == 'success':
+            entry['gelbooru_receipt'] = record_publication_result('gelbooru', {'caption': tag_string}, confirmed=True)
 
     log_data.append(entry)
     save_uploaded_log(log_data)
